@@ -5,6 +5,11 @@ workspace(
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+##################################################
+#                                                #
+# To see this working, use rules_nodejs <= 5.5.4 #
+#                                                #
+##################################################
 # bazel run :index_bin --toolchain_resolution_debug='nodejs'
 http_archive(
     name = "build_bazel_rules_nodejs",
@@ -21,12 +26,13 @@ http_archive(
     # sha256 = "c29944ba9b0b430aadcaf3bf2570fece6fc5ebfb76df145c6cdad40d65c20811", # Toolchain Error
     # urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.7.0/rules_nodejs-5.7.0.tar.gz"],
 
-    # sha256 = "b011d6206e4e76696eda8287618a2b6375ff862317847cdbe38f8d0cd206e9ce", # Toolchain Error
-    # urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.6.0/rules_nodejs-5.6.0.tar.gz"],
+    # 5.6.0 is the first version that has a toolchain error when used with rules_docker
+    sha256 = "b011d6206e4e76696eda8287618a2b6375ff862317847cdbe38f8d0cd206e9ce",  # Toolchain Error
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.6.0/rules_nodejs-5.6.0.tar.gz"],
 
     # 5.5.4 is the latest working version
-    sha256 = "493bb318d98bb7492cb30e534ad33df2fc5539b43d4dcc4e294a5cc60a126902",  # Works
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.5.4/rules_nodejs-5.5.4.tar.gz"],
+    # sha256 = "493bb318d98bb7492cb30e534ad33df2fc5539b43d4dcc4e294a5cc60a126902",  # Works
+    # urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.5.4/rules_nodejs-5.5.4.tar.gz"],
 
     # sha256 = "f10a3a12894fc3c9bf578ee5a5691769f6805c4be84359681a785a0c12e8d2b6", # Works
     # urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.5.3/rules_nodejs-5.5.3.tar.gz"],
@@ -79,11 +85,11 @@ load(
 
 container_repositories()
 
-################################################
-#                                              #
-# Uncomment this region to reproduce the error #
-#                                              #
-################################################
+#########################################################################
+#                                                                       #
+# Uncomment this region to reproduce the error in rules_nodejs >= 5.6.0 #
+#                                                                       #
+#########################################################################
 
 load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
 
