@@ -13,9 +13,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # bazel run :index_bin --toolchain_resolution_debug='nodejs'
 http_archive(
     name = "build_bazel_rules_nodejs",
-
-    # sha256 = "dcc55f810142b6cf46a44d0180a5a7fb923c04a5061e2e8d8eb05ccccc60864b", # Toolchain Error
-    # urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.8.0/rules_nodejs-5.8.0.tar.gz"],
+    sha256 = "dcc55f810142b6cf46a44d0180a5a7fb923c04a5061e2e8d8eb05ccccc60864b",  # Toolchain Error
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.8.0/rules_nodejs-5.8.0.tar.gz"],
 
     # sha256 = "0e8a818724c0d5dcc10c31f9452ebd54b2ab94c452d4dcbb0d45a6636d2d5a44", # Toolchain Error
     # urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.7.2/rules_nodejs-5.7.2.tar.gz"],
@@ -27,8 +26,8 @@ http_archive(
     # urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.7.0/rules_nodejs-5.7.0.tar.gz"],
 
     # 5.6.0 is the first version that has a toolchain error when used with rules_docker
-    sha256 = "b011d6206e4e76696eda8287618a2b6375ff862317847cdbe38f8d0cd206e9ce",  # Toolchain Error
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.6.0/rules_nodejs-5.6.0.tar.gz"],
+    # sha256 = "b011d6206e4e76696eda8287618a2b6375ff862317847cdbe38f8d0cd206e9ce",  # Toolchain Error
+    # urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.6.0/rules_nodejs-5.6.0.tar.gz"],
 
     # 5.5.4 is the latest working version
     # sha256 = "493bb318d98bb7492cb30e534ad33df2fc5539b43d4dcc4e294a5cc60a126902",  # Works
@@ -72,10 +71,12 @@ yarn_install(
     yarn_lock = "//:yarn.lock",
 )
 
-http_archive(
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
+git_repository(
     name = "io_bazel_rules_docker",
-    sha256 = "b1e80761a8a8243d03ebca8845e9cc1ba6c82ce7c5179ce2b295cd36f7e394bf",
-    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.25.0/rules_docker-v0.25.0.tar.gz"],
+    commit = "48ad6d6df43d1e4b9feeec961995aef01dd72080",
+    remote = "https://github.com/bazelbuild/rules_docker.git",
 )
 
 load(
@@ -90,6 +91,22 @@ container_repositories()
 # Uncomment this region to reproduce the error in rules_nodejs >= 5.6.0 #
 #                                                                       #
 #########################################################################
+
+# 'Fixed' by using rules_go version 0.33.0.
+http_archive(
+    name = "io_bazel_rules_go",
+    sha256 = "685052b498b6ddfe562ca7a97736741d87916fe536623afb7da2824c0211c369",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.33.0/rules_go-v0.33.0.zip",
+        "https://github.com/bazelbuild/rules_go/releases/download/v0.33.0/rules_go-v0.33.0.zip",
+    ],
+)
+
+load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
+
+go_rules_dependencies()
+
+go_register_toolchains(version = "1.18.3")
 
 load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
 
